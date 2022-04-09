@@ -60,13 +60,17 @@
                 const currentUrlDirName = origin + '/issues-storage/player/';
                 const url = new URL(currentUrlDirName);
 
-                url.searchParams.set('source', (new URL(settingObject.source, location)).href); // https://stackoverflow.com/questions/14780350/convert-relative-path-to-absolute-using-javascript
+                const absUrlPath = (url) => {
+                    return (new URL(url, location)).href;
+                }
+
+                url.searchParams.set('source', absUrlPath(settingObject.source)); // https://stackoverflow.com/questions/14780350/convert-relative-path-to-absolute-using-javascript
 
                 if (typeof settingObject.poster === 'string')
-                    url.searchParams.set('poster', settingObject.poster);
+                    url.searchParams.set('poster', absUrlPath(settingObject.poster));
 
                 if (typeof settingObject.thumbnails === 'string')
-                    url.searchParams.set('thumbnails', settingObject.thumbnails)
+                    url.searchParams.set('thumbnails', absUrlPath(settingObject.thumbnails))
 
                 if (settingObject.live === true)
                     url.searchParams.set('live', 'on');
