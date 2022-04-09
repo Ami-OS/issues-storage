@@ -1,0 +1,100 @@
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+        <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="./favicon.ico" sizes="32x32" />
+
+        <noscript>
+        </noscript>
+
+        <style>
+            :root {
+                --site-font: "Noto Sans","Noto Sans JP","Noto Sans KR","Noto Naskh Arabic","Noto Sans Thai","Noto Sans Hebrew","Noto Sans Bengali",sans-serif;
+            }
+            body {
+                font-family: var(--site-font),Helvetica Neue,Arial,sans-serif;
+                letter-spacing: 0;
+                background-color: #fbc02d;
+                transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+                overflow: hidden;
+            }
+            body:active {
+                background-color: #039be5;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="player-container"></div>
+        <script>
+
+            function embedPlayer(playerContainerElement, settingObject) {
+                if (typeof playerContainerElement !== 'object')
+                    return;
+
+                if (settingObject.source === undefined)
+                    return;
+                
+                const iframeElement = document.createElement('iframe');
+
+                iframeElement.title = 'Video Player';
+                iframeElement.frameBorder = 0;
+                iframeElement.style.frameBorder = 0;
+                iframeElement.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+                iframeElement.allowFullscreen = true;
+
+                if (typeof settingObject.width === 'number') {
+                    iframeElement.width = settingObject.width;
+                } else if (typeof settingObject.width === 'string') {
+                    iframeElement.style.width = settingObject.width;
+                }
+
+                if (typeof settingObject.height === 'number') {
+                    iframeElement.height = settingObject.height;
+                } else if (typeof settingObject.height === 'string') {
+                    iframeElement.style.height = settingObject.height;
+                }
+
+                // source payload
+                const currentUrlDirName = origin + '/issues-storage/player/';
+                const url = new URL(currentUrlDirName);
+
+                url.searchParams.set('source', (new URL(settingObject.source, location)).href); // https://stackoverflow.com/questions/14780350/convert-relative-path-to-absolute-using-javascript
+
+                if (typeof settingObject.poster === 'string')
+                    url.searchParams.set('poster', settingObject.poster);
+
+                if (typeof settingObject.thumbnails === 'string')
+                    url.searchParams.set('thumbnails', settingObject.thumbnails)
+
+                if (settingObject.live === true)
+                    url.searchParams.set('live', 'on');
+
+                if (settingObject.autoplay === true)
+                    url.searchParams.set('autoplay', 'on');
+
+                iframeElement.src = url.href;
+
+                playerContainerElement.appendChild(iframeElement);
+
+                return iframeElement;
+            }
+
+            // load init function
+            window.addEventListener('load', function() {
+
+                embedPlayer(document.querySelector('#player-container'), {
+                    source: '../output_video/playlist.m3u8',
+                    width: '100%',
+                    height: '100%'
+                });
+
+                // Remove loading shell
+                document.querySelectorAll('.loading-shell').forEach(function (element) {
+                    element.classList.remove('loading-shell');
+                });
+            });
+        </script>
+    </body>
+</html>
